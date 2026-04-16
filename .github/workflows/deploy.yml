@@ -11,7 +11,7 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Deploy to EC2
       uses: appleboy/ssh-action@master
@@ -20,9 +20,17 @@ jobs:
         username: ubuntu
         key: ${{ secrets.EC2_SSH_KEY }}
         script: |
+          cd ~
+
+          if [ ! -d spring-petclinic ]; then
+            git clone https://github.com/raheemmohd/spring-petclinic.git
+          fi
+
           cd spring-petclinic
-          git pull
+          git pull origin main
+
           docker stop petclinic || true
           docker rm petclinic || true
+
           docker build -t petclinic .
           docker run -d -p 8080:8080 --name petclinic petclinic
