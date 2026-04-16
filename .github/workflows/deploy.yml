@@ -13,7 +13,7 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Deploy to EC2
+    - name: Deploy via SSH
       uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.EC2_HOST }}
@@ -29,8 +29,7 @@ jobs:
           cd spring-petclinic
           git pull origin main
 
-          docker stop petclinic || true
-          docker rm petclinic || true
-
-          docker build -t petclinic .
-          docker run -d -p 8080:8080 --name petclinic petclinic
+          sudo docker stop petclinic || true
+          sudo docker rm petclinic || true
+          sudo docker build -t petclinic .
+          sudo docker run -d -p 8080:8080 --name petclinic petclinic
